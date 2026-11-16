@@ -1,7 +1,11 @@
-# Lab 3
+# Lab 3: Component Modelling & Architectural Pattern Selection
 
-**Aim:** _write the aim of the lab here_
+**Scenario:** CreatorEscrow (Problem Statement #53), continued from Lab 1
+**Architecture chosen:** Layered (Presentation, Business Logic, Data)
 
-## Files
-- Programs: _list your program files_
-- Outputs / screenshots: _list your output files_
+| File | Description |
+|------|-------------|
+| `component_diagram.png` / `.pdf` / `.svg` | UML component diagram: 5 components, 6 provided/required interfaces |
+| `Lab3_Justification_PES2UG24CS183.pdf` | One-page written justification (Word version also included) |
+
+![Component diagram](component_diagram.png)
