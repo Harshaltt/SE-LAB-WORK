@@ -113,3 +113,9 @@ Each change was made by prompting an AI assistant (Claude), reviewing and testin
 Platforms are now a `Platform` class that subclasses `pygame.Rect` with a `kind` of `normal`, `crumble` or `spring`, so all existing Rect collision code keeps working.
 
 **Platform legend:** brown = normal, brown with cracks = crumbles 1 s after landing, yellow with coil = spring.
+
+---
+
+## Gameplay video
+
+[`videos/gameplay_before_and_after.mp4`](videos/gameplay_before_and_after.mp4): the original game first (before), then the updated game with the danger HUD, lava bursts and new platforms (after).

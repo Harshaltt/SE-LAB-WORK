@@ -1,0 +1,4 @@
+$ flake8 --count course_enrollment_system.py
+0
+
+(Flake8 prints one line per issue followed by the total count; a count of 0 with no issue lines means no style violations were found.)
