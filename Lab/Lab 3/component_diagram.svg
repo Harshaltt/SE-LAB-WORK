@@ -3,8 +3,8 @@
   <text x="500" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#111">CreatorEscrow: UML Component Diagram (Layered Architecture)</text>
 
   <!-- layer bands -->
-  <rect x="20" y="45" width="960" height="135" rx="6" fill="#eef4fb" stroke="#9db7d5" stroke-dasharray="6 4"/>
-  <text x="32" y="66" font-size="13" font-weight="bold" fill="#3c6390">Presentation Layer</text>
+  <rect x="360" y="45" width="620" height="135" rx="6" fill="#eef4fb" stroke="#9db7d5" stroke-dasharray="6 4"/>
+  <text x="372" y="66" font-size="13" font-weight="bold" fill="#3c6390">Presentation Layer</text>
   <rect x="20" y="255" width="960" height="185" rx="6" fill="#f1f8ef" stroke="#a6c99c" stroke-dasharray="6 4"/>
   <text x="32" y="276" font-size="13" font-weight="bold" fill="#4b7a3e">Business Logic Layer</text>
   <rect x="20" y="520" width="960" height="160" rx="6" fill="#fbf3e9" stroke="#d8b98f" stroke-dasharray="6 4"/>
@@ -112,13 +112,32 @@
     <text x="700" y="634" fill="#555">Object store API</text>
   </g>
 
+
+  <!-- external payment gateway (Lab 1 supporting actor) -->
+  <rect x="60" y="75" width="220" height="80" rx="3" fill="#f4f4f4" stroke="#222" stroke-width="1.6" stroke-dasharray="7 4"/>
+  <use href="#icon" x="252" y="82"/>
+  <g text-anchor="middle" fill="#111">
+    <text x="170" y="103" font-size="12" font-style="italic">«external system»</text>
+    <text x="170" y="124" font-size="15" font-weight="bold">Escrow Payment</text>
+    <text x="170" y="142" font-size="15" font-weight="bold">Gateway</text>
+  </g>
+  <g stroke="#222" stroke-width="1.6" fill="none">
+    <line x1="170" y1="155" x2="170" y2="225"/>
+    <circle cx="170" cy="235" r="10" fill="#fff"/>
+    <path d="M154 235 A16 16 0 0 0 186 235"/>
+    <line x1="170" y1="300" x2="170" y2="251"/>
+  </g>
+  <g font-size="12" fill="#1a1a1a">
+    <text x="190" y="222" font-weight="bold">IPaymentGateway</text>
+    <text x="190" y="238" fill="#555">HTTPS API (external)</text>
+  </g>
   <!-- legend -->
   <g font-size="12" fill="#333">
     <circle cx="40" cy="712" r="8" fill="#fff" stroke="#222" stroke-width="1.6"/>
     <text x="56" y="716">Provided interface (ball)</text>
     <path d="M232 700 A12 12 0 0 1 232 724" fill="none" stroke="#222" stroke-width="1.6"/>
     <text x="250" y="716">Required interface (socket)</text>
-    <text x="470" y="716">Solid lines = internal service calls. Requests flow top-down only; no layer is skipped.</text>
+    <text x="470" y="716">Solid lines = internal service calls. Dashed box = external system outside the layers.</text>
     <text x="40" y="742" fill="#666">Harsh Mannan · PES2UG24CS183 · Lab 3 · Problem Statement #53 (CreatorEscrow)</text>
   </g>
 </svg>
