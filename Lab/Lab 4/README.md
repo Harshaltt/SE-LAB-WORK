@@ -119,3 +119,7 @@ Platforms are now a `Platform` class that subclasses `pygame.Rect` with a `kind`
 ## Gameplay video
 
 [`videos/gameplay_before_and_after.mp4`](videos/gameplay_before_and_after.mp4): the original game first (before), then the updated game with the danger HUD, lava bursts and new platforms (after).
+
+## AI chat history
+
+[`chat_history_PES2UG24CS183.pdf`](chat_history_PES2UG24CS183.pdf): the complete conversation with the AI assistant (Claude) used to fix the bug and add the features.
