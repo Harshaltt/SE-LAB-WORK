@@ -1,0 +1,29 @@
+@startuml milestone-state-machine
+' Milestone lifecycle - supporting view for the CreatorEscrow use-case model
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName "Helvetica"
+skinparam defaultFontSize 12
+skinparam ArrowColor #37474F
+skinparam ArrowFontSize 10
+skinparam state {
+  BorderColor #00695C
+  BackgroundColor #E0F2F1
+  FontColor #004D40
+}
+
+[*] --> DRAFTED
+DRAFTED --> PENDING_FUNDING : contract accepted (FR-001)
+PENDING_FUNDING --> FUNDED : escrow captured (FR-002)
+FUNDED --> UNDER_REVIEW : draft submitted (FR-003)
+UNDER_REVIEW --> REVISION_REQUESTED : revision requested (FR-004 / UC-11)
+REVISION_REQUESTED --> UNDER_REVIEW : new version submitted (FR-003)
+UNDER_REVIEW --> PENDING_SIGNOFF : draft approved (FR-004)
+PENDING_SIGNOFF --> COMPLETED : sign-off and release (FR-005 / UC-05)
+PENDING_SIGNOFF --> DISPUTED : dispute raised (UC-12)
+DISPUTED --> COMPLETED : arbitration favours creator
+DISPUTED --> REFUNDED : arbitration favours sponsor
+COMPLETED --> [*]
+REFUNDED --> [*]
+
+@enduml

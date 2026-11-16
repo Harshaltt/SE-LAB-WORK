@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>UC-05 Use-Case Flow Specification — CreatorEscrow</title>
+<style>
+  @page { size: A4; margin: 10mm 11mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 8.9pt; line-height: 1.33; color: #14181c; margin: 0;
+  }
+  h1 { font-size: 13.5pt; margin: 0 0 1mm 0; letter-spacing: -0.2px; }
+  .sub { font-size: 7.6pt; color: #4a5560; margin: 0 0 2.4mm 0; }
+  h2 {
+    font-size: 9.2pt; margin: 3mm 0 1.1mm 0; padding-bottom: 0.5mm;
+    border-bottom: 0.8px solid #9aa7b2; text-transform: uppercase; letter-spacing: 0.6px;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 1.2mm 0; }
+  td, th { border: 0.5px solid #b8c2cb; padding: 0.9mm 1.4mm; vertical-align: top; text-align: left; }
+  th { background: #eef2f5; font-weight: 700; }
+  .meta td:nth-child(1), .meta td:nth-child(3) { background: #f5f7f9; font-weight: 700; width: 15%; }
+  ol, ul { margin: 0.4mm 0 1mm 0; padding-left: 7mm; }
+  li { margin-bottom: 0.5mm; }
+  .cols { column-count: 2; column-gap: 5mm; column-fill: balance; }
+  .cols h2 { break-inside: avoid; }
+  .box { break-inside: avoid; }
+  code { font-family: "DejaVu Sans Mono", monospace; font-size: 7.4pt; background: #eef2f5; padding: 0 0.6mm; border-radius: 1px; }
+  .lead { margin: 0 0 1.2mm 0; }
+  .note { font-size: 7.5pt; color: #4a5560; font-style: italic; }
+  .tag { font-size: 7.2pt; font-weight: 700; color: #7b1f2b; }
+</style>
+</head>
+<body>
+
+<h1>UC-05 — Approve Milestone &amp; Release Escrow Payment</h1>
+<p class="sub"><b>CreatorEscrow — Freelance Content Creator Escrow Platform</b> · Problem Statement #53 · Lab 1, Deliverable 3: Use-Case Flow Specification · Traces to FR-005, NFR-002</p>
+
+<table class="meta">
+  <tr>
+    <td>Scope / Level</td><td>CreatorEscrow Platform · User-goal level</td>
+    <td>Primary Actor</td><td>Client Sponsor</td>
+  </tr>
+  <tr>
+    <td>Supporting Actors</td><td>Escrow Payment Gateway (settlement); Content Creator (notified party)</td>
+    <td>Trigger</td><td>Sponsor clicks <b>Approve &amp; Release</b> on a milestone in <code>PENDING_SIGNOFF</code>.</td>
+  </tr>
+  <tr>
+    <td>Stakeholders<br>&amp; Interests</td>
+    <td colspan="3"><b>Content Creator:</b> wants to be paid quickly, and paid once. <b>Client Sponsor:</b> wants to pay only for work they have personally approved, and to get the original files afterwards. <b>Platform:</b> wants the account totals to stay balanced and every payment to be traceable.</td>
+  </tr>
+</table>
+
+<div class="cols">
+
+<div class="box">
+<h2>Preconditions</h2>
+<ol>
+  <li>The Client Sponsor is logged in, and has passed two-factor authentication in the last 12 hours.</li>
+  <li>The contract is <code>ACTIVE</code> and this sponsor is either part of it or a delegate named in it.</li>
+  <li>The milestone is in state <code>PENDING_SIGNOFF</code>, meaning the sponsor already approved the latest version in UC-04.</li>
+  <li>The escrow account is holding exactly the milestone amount (the milestone was <code>FUNDED</code> in FR-002).</li>
+  <li>There is no open dispute on this milestone.</li>
+</ol>
+</div>
+
+<div class="box">
+<h2>Postconditions</h2>
+<p class="lead"><b>If it succeeds</b></p>
+<ol>
+  <li>The milestone is <code>COMPLETED</code>, and a sign-off record has been saved with the sponsor ID, the time, which version was approved, and the signature.</li>
+  <li>The milestone amount comes out of escrow, (amount − platform fee) goes into the creator's balance, and the fee goes to the platform account. The totals still add up.</li>
+  <li>The sponsor can now download the original un-watermarked files, and the licence terms are saved.</li>
+  <li>An entry is added to the audit log and both users are notified.</li>
+  <li>The milestone can no longer be revised or disputed.</li>
+</ol>
+<p class="lead"><b>If anything fails</b> — the whole transaction is rolled back. The milestone stays <code>PENDING_SIGNOFF</code>, the money stays in escrow, nobody is partly paid, and the failure is written to the log.</p>
+</div>
+
+<div class="box">
+<h2>Main Success Scenario</h2>
+<ol>
+  <li>Sponsor opens the milestone from the contract dashboard and clicks <b>Approve &amp; Release</b>.</li>
+  <li>System runs UC-10 <i>Verify Sign-off Authorization</i>: is the session still valid, is this sponsor allowed to sign off on this contract, is the milestone in the right state, and is there no dispute open?</li>
+  <li>System shows a summary before confirming: which version was approved, the total amount, the platform fee, what the creator will actually receive, and the licence terms.</li>
+  <li>Sponsor confirms by entering their password again or a one-time passcode.</li>
+  <li>System saves the sign-off so it cannot later be denied: sponsor ID, the time, a SHA-256 hash of the approved version, and the signature.</li>
+  <li>System starts a single transaction, creates a unique request key so the payment cannot happen twice, and runs UC-09 <i>Process Escrow Transaction</i> to move the money out of escrow and into the creator's balance.</li>
+  <li>Escrow Payment Gateway confirms the payment went through for that request key.</li>
+  <li>System commits the transaction, marks the milestone <code>COMPLETED</code>, and writes the audit record.</li>
+  <li>System gives the sponsor access to the original un-watermarked files and records the licence transfer.</li>
+  <li>System tells the creator the money is available and the sponsor the files are available, then moves the contract on to the next milestone, or closes it if this was the last one.</li>
+</ol>
+</div>
+
+<div class="box">
+<h2>Alternate Flow — A1: Sponsor Asks for Changes Instead of Approving</h2>
+<p class="note">Branches at step 3, at the extension point <b>Decision Recorded</b>. This is UC-11.</p>
+<ul>
+  <li><span class="tag">A1.1</span> At the summary screen the sponsor clicks <b>Request Revision</b> instead of confirming.</li>
+  <li><span class="tag">A1.2</span> System asks for a comment of at least 20 characters and checks how many revision rounds have already been used against the agreed limit (FR-004).</li>
+  <li><span class="tag">A1.3</span> <i>Limit not reached:</i> System saves the comment against version v(n), sets the milestone to <code>REVISION_REQUESTED</code>, leaves the escrow money alone, and notifies the creator within 60 seconds. The flow goes back to UC-03 for version v(n+1), and <b>UC-05 ends without any money being released.</b></li>
+  <li><span class="tag">A1.4</span> <i>Limit reached:</i> System blocks the request, explains that all the agreed revisions have been used, and offers UC-12 <i>Raise Milestone Dispute</i> instead. The milestone stays <code>PENDING_SIGNOFF</code>.</li>
+</ul>
+</div>
+
+<div class="box">
+<h2>Exception Flows <span class="note">(extra — the required alternate flow is A1 above)</span></h2>
+<ul>
+  <li><span class="tag">E1</span> <b>Gateway times out at step 7.</b> The transaction is rolled back and the milestone stays <code>PENDING_SIGNOFF</code>. The system retries with the <i>same</i> request key up to 3 times, waiting a bit longer each time. If it still fails, the milestone is flagged <code>RELEASE_PENDING_MANUAL</code> and the support team is alerted. Because the key never changes, the creator can never be paid twice (NFR-002).</li>
+  <li><span class="tag">E2</span> <b>A dispute is raised at the same time (UC-12).</b> The system notices the milestone changed between steps 5 and 8 by checking its version number, cancels the release, keeps the money locked, and moves the milestone to <code>DISPUTED</code>.</li>
+</ul>
+</div>
+
+<div class="box">
+<h2>Business Rules</h2>
+<table>
+  <tr><th style="width:13%">ID</th><th>Rule</th></tr>
+  <tr><td>BR-01</td><td>Money never leaves escrow without a sign-off record, as required by FR-005.</td></tr>
+  <tr><td>BR-02</td><td>A milestone can be released at most once. The unique request key enforces this (NFR-002).</td></tr>
+  <tr><td>BR-03</td><td>The sponsor gets the original files only at the moment the payment actually succeeds.</td></tr>
+  <tr><td>BR-04</td><td>If a dispute is raised before the transaction commits, the dispute wins and the release is cancelled.</td></tr>
+</table>
+</div>
+
+</div>
+</body>
+</html>

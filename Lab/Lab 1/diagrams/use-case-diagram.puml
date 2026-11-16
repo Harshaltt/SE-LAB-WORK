@@ -1,0 +1,93 @@
+@startuml use-case-diagram
+' =====================================================================
+'  Freelance Content Creator Escrow Platform ("CreatorEscrow")
+'  Lab 1 - Requirements Engineering & UML Use-Case Modelling
+'  Problem Statement #53 | PES University, Dept. of CSE
+'
+'  Render:  java -jar plantuml.jar -tpng use-case-diagram.puml
+'           java -jar plantuml.jar -tsvg use-case-diagram.puml
+' =====================================================================
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName "Helvetica"
+skinparam defaultFontSize 13
+skinparam ArrowColor #37474F
+skinparam ArrowFontSize 11
+skinparam ArrowFontColor #B71C1C
+skinparam nodesep 22
+skinparam ranksep 68
+
+skinparam actor {
+  BorderColor #1A237E
+  BackgroundColor #E8EAF6
+  FontStyle bold
+}
+skinparam usecase {
+  BorderColor #00695C
+  BackgroundColor #E0F2F1
+  FontColor #004D40
+  BorderThickness 1.2
+}
+skinparam rectangle {
+  BorderColor #455A64
+  BorderThickness 1.5
+  FontStyle bold
+  FontSize 16
+}
+
+left to right direction
+
+actor "Content Creator" as CC
+actor "Client Sponsor"  as CS
+
+rectangle "CreatorEscrow Platform" {
+  usecase "UC-01\nCreate Contract &\nDefine Milestones" as UC01
+  usecase "UC-02\nFund Milestone\nEscrow"               as UC02
+  usecase "UC-03\nSubmit Draft\nDeliverable"            as UC03
+  usecase "UC-04\nReview Draft\nDeliverable"            as UC04
+  usecase "UC-11\nRequest Revision"                     as UC11 #FCE4EC
+  usecase "UC-05\nApprove Milestone &\nRelease Payment" as UC05
+  usecase "UC-12\nRaise Milestone\nDispute"             as UC12 #FCE4EC
+  usecase "UC-06\nWithdraw Creator\nBalance"            as UC06
+  usecase "UC-07\nTrack Contract\nProgress"             as UC07
+  usecase "UC-08\nApply Automated\nWatermark"           as UC08 #F1F8E9
+  usecase "UC-10\nVerify Sign-off\nAuthorization"       as UC10 #F1F8E9
+  usecase "UC-09\nProcess Escrow\nTransaction"          as UC09 #F1F8E9
+}
+
+actor "Media Processing\nService" as MPS #FFF3E0
+actor "Escrow Payment\nGateway"   as EPG #FFF3E0
+
+CS --> UC01
+CS --> UC02
+CS --> UC04
+CS --> UC05
+CS --> UC07
+CC --> UC03
+CC --> UC06
+CC --> UC07
+
+UC03 ..> UC08 : <<include>>
+UC02 ..> UC09 : <<include>>
+UC05 ..> UC09 : <<include>>
+UC06 ..> UC09 : <<include>>
+UC05 ..> UC10 : <<include>>
+
+UC11 ..> UC04 : <<extend>>
+UC12 ..> UC05 : <<extend>>
+
+UC08 --> MPS
+UC09 --> EPG
+
+legend right
+  |= Notation |= Meaning |
+  | <b>«include»</b> | Base use case <b>always</b> executes the included behaviour. |
+  | <b>«extend»</b> | Optional behaviour, executed only when its condition holds. |
+  |  |  |
+  |= Extension Point |= Condition |
+  | UC-11 at //Decision Recorded// (UC-04) | Sponsor rejects the draft and requests changes. |
+  | UC-12 at //Sign-off Pending// (UC-05) | Milestone is contested before the 72-hour release window closes. |
+endlegend
+
+@enduml
